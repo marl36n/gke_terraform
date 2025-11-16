@@ -18,7 +18,7 @@ variable "zone" {
 variable "network_name" {
   description = "VPC network name"
   type        = string
-  default     = "digital-vpc"
+  default     = "gke-vpc"
 }
 
 variable "subnet_name" {

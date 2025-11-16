@@ -4,7 +4,7 @@ resource "google_service_account" "gke_primary" {
 }
 
 
-# Grant common roles needed to manage and run GKE. Review and tighten for least privilege.
+
 resource "google_project_iam_member" "sa_container_admin" {
   project = var.project_id
   role = "roles/container.admin"
@@ -26,7 +26,7 @@ resource "google_project_iam_member" "sa_network_admin" {
 }
 
 
-# Optional: allow the GKE nodes' SA to pull images from project's Artifact Registry / Container Registry
+# the GKE nodes' SA to pull images from project's Artifact Registry / Container Registry
 resource "google_project_iam_member" "node_service_account_artifact" {
   project = var.project_id
   role = "roles/artifactregistry.reader"

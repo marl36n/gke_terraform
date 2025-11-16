@@ -1,12 +1,10 @@
-# Create the GKE cluster. This example creates a zonal cluster. For regional, set location accordingly and `location = var.region`.
 resource "google_container_cluster" "primary" {
-  # Enable private nodes
   private_cluster_config {
     enable_private_nodes       = true
     enable_private_endpoint    = false
     master_ipv4_cidr_block    = "172.16.0.0/28"
   }
-
+  deletion_protection = false
   name     = var.cluster_name
   location = var.location
 
@@ -29,7 +27,6 @@ resource "google_container_cluster" "primary" {
   }
 }
 
-# Secondary ranges must exist for IP allocation. Create them on the subnet.
 resource "google_compute_subnetwork_iam_member" "allow_network_user" {
   subnetwork = google_compute_subnetwork.subnet.name
   region     = google_compute_subnetwork.subnet.region

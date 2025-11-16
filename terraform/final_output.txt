@@ -1,0 +1,74 @@
+google_compute_network.vpc: Refreshing state... [id=projects/toffee-digital/global/networks/gke-vpc]
+google_service_account.gke_primary: Refreshing state... [id=projects/toffee-digital/serviceAccounts/gke-primary@toffee-digital.iam.gserviceaccount.com]
+google_compute_firewall.allow-ssh-rdp: Refreshing state... [id=projects/toffee-digital/global/firewalls/gke-allow-ssh-rdp]
+google_compute_subnetwork.subnet: Refreshing state... [id=projects/toffee-digital/regions/asia-southeast1/subnetworks/gke-subnet]
+google_compute_firewall.allow-internal: Refreshing state... [id=projects/toffee-digital/global/firewalls/gke-allow-internal]
+google_container_cluster.primary: Refreshing state... [id=projects/toffee-digital/locations/asia-southeast1/clusters/gke-cluster]
+google_project_iam_member.sa_network_admin: Refreshing state... [id=toffee-digital/roles/compute.networkAdmin/serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com]
+google_project_iam_member.sa_container_admin: Refreshing state... [id=toffee-digital/roles/container.admin/serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com]
+google_project_iam_member.sa_service_account_user: Refreshing state... [id=toffee-digital/roles/iam.serviceAccountUser/serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com]
+google_compute_subnetwork_iam_member.allow_network_user: Refreshing state... [id=projects/toffee-digital/regions/asia-southeast1/subnetworks/gke-subnet/roles/compute.networkUser/serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com]
+google_project_iam_member.node_service_account_artifact: Refreshing state... [id=toffee-digital/roles/artifactregistry.reader/serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com]
+google_container_node_pool.primary_nodes: Refreshing state... [id=projects/toffee-digital/locations/asia-southeast1/clusters/gke-cluster/nodePools/primary-pool]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # google_compute_router.nat_router will be created
+  + resource "google_compute_router" "nat_router" {
+      + creation_timestamp = (known after apply)
+      + id                 = (known after apply)
+      + name               = "gke-nat-router"
+      + network            = "https://www.googleapis.com/compute/v1/projects/toffee-digital/global/networks/gke-vpc"
+      + project            = "toffee-digital"
+      + region             = "asia-southeast1"
+      + self_link          = (known after apply)
+    }
+
+  # google_compute_router_nat.nat_config will be created
+  + resource "google_compute_router_nat" "nat_config" {
+      + auto_network_tier                   = (known after apply)
+      + drain_nat_ips                       = (known after apply)
+      + enable_dynamic_port_allocation      = (known after apply)
+      + enable_endpoint_independent_mapping = (known after apply)
+      + endpoint_types                      = (known after apply)
+      + icmp_idle_timeout_sec               = 30
+      + id                                  = (known after apply)
+      + min_ports_per_vm                    = (known after apply)
+      + name                                = "gke-cloud-nat"
+      + nat_ip_allocate_option              = "AUTO_ONLY"
+      + nat_ips                             = (known after apply)
+      + project                             = "toffee-digital"
+      + region                              = "asia-southeast1"
+      + router                              = "gke-nat-router"
+      + source_subnetwork_ip_ranges_to_nat  = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+      + tcp_established_idle_timeout_sec    = 1200
+      + tcp_time_wait_timeout_sec           = 120
+      + tcp_transitory_idle_timeout_sec     = 30
+      + type                                = "PUBLIC"
+      + udp_idle_timeout_sec                = 30
+
+      + log_config {
+          + enable = true
+          + filter = "ERRORS_ONLY"
+        }
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+google_compute_router.nat_router: Creating...
+google_compute_router.nat_router: Still creating... [00m10s elapsed]
+google_compute_router.nat_router: Creation complete after 11s [id=projects/toffee-digital/regions/asia-southeast1/routers/gke-nat-router]
+google_compute_router_nat.nat_config: Creating...
+google_compute_router_nat.nat_config: Still creating... [00m10s elapsed]
+google_compute_router_nat.nat_config: Creation complete after 12s [id=toffee-digital/asia-southeast1/gke-nat-router/gke-cloud-nat]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+cluster_name = "gke-cluster"
+endpoint = "34.124.128.153"
+gke_service_account_email = "gke-primary@toffee-digital.iam.gserviceaccount.com"
+kubeconfig_client_certificate = <sensitive>

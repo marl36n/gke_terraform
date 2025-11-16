@@ -1,0 +1,51 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - >-
+        --tag=asia-southeast1-docker.pkg.dev/$PROJECT_ID/node-app/node-app:latest
+      - '--file=node-project/Dockerfile'
+      - .
+    id: build-image-node-app
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/node-app/node-app:latest'
+    id: push-image-to-container-registry
+    waitFor:
+      - build-image-node-app
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud container clusters get-credentials $GKE_CLUSTER \
+          --zone $GKE_ZONE \
+          --project $PROJECT_ID
+    id: gke-credentials
+    waitFor:
+      - push-image-to-container-registry
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      [
+        'apply',
+        '-f',
+        'kubernetes_yaml/*.yaml'
+      ]  
+    id: deploy-to-gke
+    waitFor:
+      - gke-credentials
+images:
+  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/node-app/node-app:latest'
+logsBucket: 'gs://dpe-build-log-bucket/myapp/'
+options:
+  machineType: E2_MEDIUM
+  substitutionOption: ALLOW_LOOSE
+  diskSizeGb: '20'
+substitutions:
+  _REGION: dpe-build-log-bucket
+  _PROJECT_ID: toffee-digital
+  _GKE_CLUSTER: "gke-cluster"
+  _GKE_ZONE: "asia-southeast1-a"
+serviceAccount: cloud-build@toffee-digital.iam.gserviceaccount.com

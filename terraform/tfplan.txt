@@ -1,0 +1,427 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # google_compute_firewall.allow-internal will be created
+  + resource "google_compute_firewall" "allow-internal" {
+      + creation_timestamp = (known after apply)
+      + destination_ranges = (known after apply)
+      + direction          = (known after apply)
+      + enable_logging     = (known after apply)
+      + id                 = (known after apply)
+      + name               = "gke-allow-internal"
+      + network            = "gke-vpc"
+      + priority           = 1000
+      + project            = "toffee-digital"
+      + self_link          = (known after apply)
+      + source_ranges      = [
+          + "10.0.0.0/8",
+        ]
+
+      + allow {
+          + ports    = [
+              + "0-65535",
+            ]
+          + protocol = "tcp"
+        }
+      + allow {
+          + ports    = [
+              + "0-65535",
+            ]
+          + protocol = "udp"
+        }
+      + allow {
+          + ports    = []
+          + protocol = "icmp"
+        }
+    }
+
+  # google_compute_firewall.allow-ssh-rdp will be created
+  + resource "google_compute_firewall" "allow-ssh-rdp" {
+      + creation_timestamp = (known after apply)
+      + destination_ranges = (known after apply)
+      + direction          = (known after apply)
+      + enable_logging     = (known after apply)
+      + id                 = (known after apply)
+      + name               = "gke-allow-ssh-rdp"
+      + network            = "gke-vpc"
+      + priority           = 1000
+      + project            = "toffee-digital"
+      + self_link          = (known after apply)
+      + source_ranges      = [
+          + "0.0.0.0/0",
+        ]
+
+      + allow {
+          + ports    = [
+              + "22",
+              + "3389",
+            ]
+          + protocol = "tcp"
+        }
+    }
+
+  # google_compute_network.vpc will be created
+  + resource "google_compute_network" "vpc" {
+      + auto_create_subnetworks                   = false
+      + bgp_always_compare_med                    = (known after apply)
+      + bgp_best_path_selection_mode              = (known after apply)
+      + bgp_inter_region_cost                     = (known after apply)
+      + delete_default_routes_on_create           = false
+      + description                               = "VPC for GKE cluster"
+      + gateway_ipv4                              = (known after apply)
+      + id                                        = (known after apply)
+      + internal_ipv6_range                       = (known after apply)
+      + mtu                                       = (known after apply)
+      + name                                      = "gke-vpc"
+      + network_firewall_policy_enforcement_order = "AFTER_CLASSIC_FIREWALL"
+      + network_id                                = (known after apply)
+      + numeric_id                                = (known after apply)
+      + project                                   = "toffee-digital"
+      + routing_mode                              = "GLOBAL"
+      + self_link                                 = (known after apply)
+    }
+
+  # google_compute_router.nat_router will be created
+  + resource "google_compute_router" "nat_router" {
+      + creation_timestamp = (known after apply)
+      + id                 = (known after apply)
+      + name               = "gke-nat-router"
+      + network            = "gke-vpc"
+      + project            = "toffee-digital"
+      + region             = "asia-southeast1"
+      + self_link          = (known after apply)
+    }
+
+  # google_compute_router_nat.nat_config will be created
+  + resource "google_compute_router_nat" "nat_config" {
+      + auto_network_tier                   = (known after apply)
+      + drain_nat_ips                       = (known after apply)
+      + enable_dynamic_port_allocation      = (known after apply)
+      + enable_endpoint_independent_mapping = (known after apply)
+      + endpoint_types                      = (known after apply)
+      + icmp_idle_timeout_sec               = 30
+      + id                                  = (known after apply)
+      + min_ports_per_vm                    = (known after apply)
+      + name                                = "gke-cloud-nat"
+      + nat_ip_allocate_option              = "AUTO_ONLY"
+      + nat_ips                             = (known after apply)
+      + project                             = "toffee-digital"
+      + region                              = "asia-southeast1"
+      + router                              = "gke-nat-router"
+      + source_subnetwork_ip_ranges_to_nat  = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+      + tcp_established_idle_timeout_sec    = 1200
+      + tcp_time_wait_timeout_sec           = 120
+      + tcp_transitory_idle_timeout_sec     = 30
+      + type                                = "PUBLIC"
+      + udp_idle_timeout_sec                = 30
+
+      + log_config {
+          + enable = true
+          + filter = "ERRORS_ONLY"
+        }
+    }
+
+  # google_compute_subnetwork.subnet will be created
+  + resource "google_compute_subnetwork" "subnet" {
+      + creation_timestamp         = (known after apply)
+      + external_ipv6_prefix       = (known after apply)
+      + fingerprint                = (known after apply)
+      + gateway_address            = (known after apply)
+      + id                         = (known after apply)
+      + internal_ipv6_prefix       = (known after apply)
+      + ip_cidr_range              = "10.10.0.0/16"
+      + ipv6_cidr_range            = (known after apply)
+      + ipv6_gce_endpoint          = (known after apply)
+      + name                       = "gke-subnet"
+      + network                    = (known after apply)
+      + private_ip_google_access   = true
+      + private_ipv6_google_access = (known after apply)
+      + project                    = "toffee-digital"
+      + purpose                    = (known after apply)
+      + region                     = "asia-southeast1"
+      + self_link                  = (known after apply)
+      + stack_type                 = (known after apply)
+      + state                      = (known after apply)
+      + subnetwork_id              = (known after apply)
+
+      + secondary_ip_range {
+          + ip_cidr_range = "10.20.0.0/14"
+          + range_name    = "pods-range"
+        }
+      + secondary_ip_range {
+          + ip_cidr_range = "10.24.0.0/20"
+          + range_name    = "svc-range"
+        }
+    }
+
+  # google_compute_subnetwork_iam_member.allow_network_user will be created
+  + resource "google_compute_subnetwork_iam_member" "allow_network_user" {
+      + etag       = (known after apply)
+      + id         = (known after apply)
+      + member     = "serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com"
+      + project    = "toffee-digital"
+      + region     = "asia-southeast1"
+      + role       = "roles/compute.networkUser"
+      + subnetwork = "gke-subnet"
+    }
+
+  # google_container_cluster.primary will be created
+  + resource "google_container_cluster" "primary" {
+      + cluster_ipv4_cidr                        = (known after apply)
+      + datapath_provider                        = (known after apply)
+      + default_max_pods_per_node                = (known after apply)
+      + deletion_protection                      = true
+      + disable_l4_lb_firewall_reconciliation    = false
+      + effective_labels                         = {
+          + "goog-terraform-provisioned" = "true"
+        }
+      + enable_cilium_clusterwide_network_policy = false
+      + enable_fqdn_network_policy               = false
+      + enable_intranode_visibility              = (known after apply)
+      + enable_kubernetes_alpha                  = false
+      + enable_l4_ilb_subsetting                 = false
+      + enable_legacy_abac                       = false
+      + enable_multi_networking                  = false
+      + enable_shielded_nodes                    = true
+      + endpoint                                 = (known after apply)
+      + id                                       = (known after apply)
+      + initial_node_count                       = 1
+      + label_fingerprint                        = (known after apply)
+      + location                                 = "asia-southeast1"
+      + logging_service                          = (known after apply)
+      + master_version                           = (known after apply)
+      + monitoring_service                       = (known after apply)
+      + name                                     = "gke-cluster"
+      + network                                  = "gke-vpc"
+      + networking_mode                          = (known after apply)
+      + node_locations                           = (known after apply)
+      + node_version                             = (known after apply)
+      + operation                                = (known after apply)
+      + private_ipv6_google_access               = (known after apply)
+      + project                                  = (known after apply)
+      + remove_default_node_pool                 = true
+      + self_link                                = (known after apply)
+      + services_ipv4_cidr                       = (known after apply)
+      + subnetwork                               = "gke-subnet"
+      + terraform_labels                         = {
+          + "goog-terraform-provisioned" = "true"
+        }
+      + tpu_ipv4_cidr_block                      = (known after apply)
+
+      + addons_config (known after apply)
+
+      + anonymous_authentication_config (known after apply)
+
+      + authenticator_groups_config (known after apply)
+
+      + cluster_autoscaling (known after apply)
+
+      + confidential_nodes (known after apply)
+
+      + control_plane_endpoints_config (known after apply)
+
+      + cost_management_config (known after apply)
+
+      + database_encryption (known after apply)
+
+      + default_snat_status (known after apply)
+
+      + enterprise_config (known after apply)
+
+      + gateway_api_config (known after apply)
+
+      + gke_auto_upgrade_config (known after apply)
+
+      + identity_service_config (known after apply)
+
+      + ip_allocation_policy {
+          + cluster_ipv4_cidr_block       = (known after apply)
+          + cluster_secondary_range_name  = "pods-range"
+          + services_ipv4_cidr_block      = (known after apply)
+          + services_secondary_range_name = "svc-range"
+          + stack_type                    = "IPV4"
+
+          + auto_ipam_config (known after apply)
+
+          + network_tier_config (known after apply)
+
+          + pod_cidr_overprovision_config (known after apply)
+        }
+
+      + logging_config (known after apply)
+
+      + master_auth (known after apply)
+
+      + master_authorized_networks_config (known after apply)
+
+      + mesh_certificates (known after apply)
+
+      + monitoring_config (known after apply)
+
+      + node_config (known after apply)
+
+      + node_pool (known after apply)
+
+      + node_pool_auto_config (known after apply)
+
+      + node_pool_defaults (known after apply)
+
+      + notification_config (known after apply)
+
+      + pod_autoscaling (known after apply)
+
+      + private_cluster_config {
+          + enable_private_nodes   = true
+          + master_ipv4_cidr_block = "172.16.0.0/28"
+          + peering_name           = (known after apply)
+          + private_endpoint       = (known after apply)
+          + public_endpoint        = (known after apply)
+
+          + master_global_access_config (known after apply)
+        }
+
+      + rbac_binding_config (known after apply)
+
+      + release_channel (known after apply)
+
+      + security_posture_config (known after apply)
+
+      + service_external_ips_config (known after apply)
+
+      + vertical_pod_autoscaling (known after apply)
+
+      + workload_identity_config (known after apply)
+    }
+
+  # google_container_node_pool.primary_nodes will be created
+  + resource "google_container_node_pool" "primary_nodes" {
+      + cluster                     = "gke-cluster"
+      + id                          = (known after apply)
+      + initial_node_count          = 3
+      + instance_group_urls         = (known after apply)
+      + location                    = "asia-southeast1"
+      + managed_instance_group_urls = (known after apply)
+      + max_pods_per_node           = (known after apply)
+      + name                        = "primary-pool"
+      + name_prefix                 = (known after apply)
+      + node_count                  = (known after apply)
+      + node_locations              = (known after apply)
+      + operation                   = (known after apply)
+      + project                     = "toffee-digital"
+      + version                     = (known after apply)
+
+      + autoscaling {
+          + location_policy = (known after apply)
+          + max_node_count  = 5
+          + min_node_count  = 1
+        }
+
+      + management (known after apply)
+
+      + network_config (known after apply)
+
+      + node_config {
+          + disk_size_gb     = (known after apply)
+          + disk_type        = (known after apply)
+          + effective_taints = (known after apply)
+          + image_type       = (known after apply)
+          + labels           = (known after apply)
+          + local_ssd_count  = (known after apply)
+          + logging_variant  = (known after apply)
+          + machine_type     = "e2-medium"
+          + metadata         = (known after apply)
+          + min_cpu_platform = (known after apply)
+          + oauth_scopes     = [
+              + "https://www.googleapis.com/auth/cloud-platform",
+            ]
+          + preemptible      = false
+          + service_account  = "gke-primary@toffee-digital.iam.gserviceaccount.com"
+          + spot             = false
+
+          + boot_disk (known after apply)
+
+          + confidential_nodes (known after apply)
+
+          + gcfs_config (known after apply)
+
+          + guest_accelerator (known after apply)
+
+          + kubelet_config (known after apply)
+
+          + linux_node_config (known after apply)
+
+          + shielded_instance_config (known after apply)
+
+          + windows_node_config (known after apply)
+
+          + workload_metadata_config (known after apply)
+        }
+
+      + upgrade_settings (known after apply)
+    }
+
+  # google_project_iam_member.node_service_account_artifact will be created
+  + resource "google_project_iam_member" "node_service_account_artifact" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com"
+      + project = "toffee-digital"
+      + role    = "roles/artifactregistry.reader"
+    }
+
+  # google_project_iam_member.sa_container_admin will be created
+  + resource "google_project_iam_member" "sa_container_admin" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com"
+      + project = "toffee-digital"
+      + role    = "roles/container.admin"
+    }
+
+  # google_project_iam_member.sa_network_admin will be created
+  + resource "google_project_iam_member" "sa_network_admin" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com"
+      + project = "toffee-digital"
+      + role    = "roles/compute.networkAdmin"
+    }
+
+  # google_project_iam_member.sa_service_account_user will be created
+  + resource "google_project_iam_member" "sa_service_account_user" {
+      + etag    = (known after apply)
+      + id      = (known after apply)
+      + member  = "serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com"
+      + project = "toffee-digital"
+      + role    = "roles/iam.serviceAccountUser"
+    }
+
+  # google_service_account.gke_primary will be created
+  + resource "google_service_account" "gke_primary" {
+      + account_id   = "gke-primary"
+      + disabled     = false
+      + display_name = "GKE service account for terraform-managed cluster"
+      + email        = "gke-primary@toffee-digital.iam.gserviceaccount.com"
+      + id           = (known after apply)
+      + member       = "serviceAccount:gke-primary@toffee-digital.iam.gserviceaccount.com"
+      + name         = (known after apply)
+      + project      = "toffee-digital"
+      + unique_id    = (known after apply)
+    }
+
+Plan: 14 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + cluster_name                  = "gke-cluster"
+  + endpoint                      = (known after apply)
+  + gke_service_account_email     = "gke-primary@toffee-digital.iam.gserviceaccount.com"
+  + kubeconfig_client_certificate = (sensitive value)
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
