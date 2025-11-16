@@ -4,7 +4,7 @@ steps:
       - build
       - >-
         --tag=asia-southeast1-docker.pkg.dev/$PROJECT_ID/node-app/node-app:latest
-      - '--file=node-project/Dockerfile'
+      - '--file=node_project/Dockerfile'
       - .
     id: build-image-node-app
   - name: gcr.io/cloud-builders/docker
@@ -31,7 +31,7 @@ steps:
       [
         'apply',
         '-f',
-        'kubernetes_yaml/*.yaml'
+        'kubernetes_yaml/.'
       ]  
     id: deploy-to-gke
     waitFor:
